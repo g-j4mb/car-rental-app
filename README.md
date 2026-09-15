@@ -1,56 +1,87 @@
-# Welcome to your Expo app 👋
+# Elite Car Rental
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform fleet and rental management app for small car rental operators — built with React Native, Expo Router, and Supabase. Staff manage the fleet, customers, and rentals day to day; partners who co-own cars get their own read-only portal to track earnings and settlements, with no spreadsheet reconciliation required.
 
-## Get started
+## Screenshots
 
-1. Install dependencies
+| Login | Staff Dashboard | Fleet |
+|---|---|---|
+| ![Login](docs/screenshots/login.png) | ![Staff Dashboard](docs/screenshots/staff-dashboard.png) | ![Fleet](docs/screenshots/fleet.png) |
 
-   ```bash
-   npm install
-   ```
+| Rentals | Customers | Monthly Reports |
+|---|---|---|
+| ![Rentals](docs/screenshots/rentals.png) | ![Customers](docs/screenshots/customers.png) | ![Reports](docs/screenshots/reports.png) |
 
-2. Start the app
+| Partner Portal |
+|---|
+| ![Partner Portal](docs/screenshots/partner-dashboard.png) |
 
-   ```bash
-   npx expo start
-   ```
+## Features
 
-In the output, you'll find options to open the app in a
+**Staff**
+- Fleet management — track cars by make/model/plate/status (available, rented, maintenance, inactive), company- or partner-owned
+- Rentals — create daily/weekly/monthly/yearly bookings, adjust or settle on return with automatic recalculation, deposit and penalty handling
+- Customers — searchable customer records with license/ID tracking and full rental history
+- Partners — commission-rate configuration per partner, with cars and revenue attributed automatically
+- Expenses — per-car (maintenance, fuel, repairs) and general company expenses
+- Reports — monthly revenue, expenses, and net profit, broken down per car, plus partner settlement summaries
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+**Partners**
+- A dedicated portal scoped to their own cars only (enforced server-side, not just hidden in the UI)
+- Live earnings, gross revenue vs. their share, and settlement status (pending/paid)
+- Rental and payment history for their vehicles
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+**Platform**
+- Bilingual UI (English/Arabic) with full RTL layout support
+- Role-based routing — staff and partner accounts land on entirely different navigation trees after login
+- Offline-friendly data layer via TanStack Query caching
 
-## Get a fresh project
+## Tech Stack
 
-When you're ready, run:
+| Layer | Technology |
+|---|---|
+| App framework | React Native 0.85, Expo (SDK 56), Expo Router (file-based, typed routes) |
+| Language | TypeScript |
+| Backend | Supabase (Postgres, Auth, Row-Level Security) |
+| Data fetching / caching | TanStack Query |
+| Client state | Zustand |
+| Forms & validation | react-hook-form + zod |
+| Styling | NativeWind (Tailwind for React Native) |
+| i18n | i18next / react-i18next |
 
-```bash
-npm run reset-project
+## Architecture
+
+Routing is organized by **role**, not by feature, using Expo Router's route groups:
+
+```
+src/app/
+├── (auth)/             Login — unauthenticated
+├── (staff)/             Staff role: fleet, rentals, customers, partners, expenses, reports
+│   ├── cars/
+│   ├── customers/
+│   ├── partners/
+│   ├── rentals/
+│   └── reports/
+└── (partner)/            Partner role: dashboard, my-cars, payments
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+`src/app/_layout.tsx` and `src/app/index.tsx` redirect each session to the right group based on the signed-in user's `role` (read from the `profiles` table). Data access follows a thin **service layer** (`src/services/*.service.ts`) wrapping the Supabase client — components call hooks in `src/hooks/`, hooks call services, services talk to Supabase. Authorization isn't just route-level: Postgres Row-Level Security policies enforce that a partner's queries can only ever return their own cars, rentals, and payments, regardless of what the client sends.
 
-### Other setup steps
+## Getting Started
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```bash
+npm install
+```
 
-## Learn more
+Set up a Supabase project (schema + RLS policies + triggers are in `supabase/migrations/`) — see [SUPABASE_SETUP.md](SUPABASE_SETUP.md) for the full walkthrough, or [START_HERE.md](START_HERE.md) for the condensed version. Then:
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+cp .env.example .env.local
+# fill in EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+npm run web    # or: npm run ios / npm run android
+```
 
-## Join the community
+## License
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+MIT — see [LICENSE](LICENSE).
