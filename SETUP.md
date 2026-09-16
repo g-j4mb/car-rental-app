@@ -1,6 +1,6 @@
-﻿# Car Rental App MVP - Setup & Getting Started
+# Car Rental App MVP - Setup & Getting Started
 
-## âœ… Completed
+## ✅ Completed
 
 ### Phase 1: Foundation
 - [x] Expo project initialized (SDK 51+)
@@ -33,7 +33,7 @@
 - [x] Partner my-cars screen
 - [x] Partner payments screen
 
-## ðŸ“‹ Next Steps
+## 📋 Next Steps
 
 ### 1. Supabase Setup (CRITICAL)
 ```bash
@@ -82,7 +82,7 @@ Run migrations:
 - [ ] Financial calculations accuracy
 - [ ] RLS enforcement (partner data isolation)
 - [ ] Offline behavior (TanStack Query persistence)
-- [ ] i18n switching (AR â†” EN)
+- [ ] i18n switching (AR ↔ EN)
 
 ### 6. Polish & Deployment
 - [ ] Error handling & retry logic
@@ -93,26 +93,26 @@ Run migrations:
 - [ ] EAS Build config
 - [ ] TestFlight/Play Store prep
 
-## ðŸ—‚ File Structure Overview
+## 🗂 File Structure Overview
 
 ```
 src/
-â”œâ”€â”€ services/        â†’ Supabase API calls
-â”œâ”€â”€ lib/             â†’ Utilities (financial, dates, validation, formatters)
-â”œâ”€â”€ stores/          â†’ Zustand (auth, UI state)
-â”œâ”€â”€ hooks/           â†’ TanStack Query hooks (to be created)
-â”œâ”€â”€ components/      â†’ Reusable UI (to be expanded)
-â”œâ”€â”€ types/           â†’ âœ“ Complete
-â”œâ”€â”€ constants/       â†’ âœ“ Complete
-â””â”€â”€ i18n/            â†’ âœ“ Complete (en.json, ar.json)
+├── services/        → Supabase API calls
+├── lib/             → Utilities (financial, dates, validation, formatters)
+├── stores/          → Zustand (auth, UI state)
+├── hooks/           → TanStack Query hooks (to be created)
+├── components/      → Reusable UI (to be expanded)
+├── types/           → ✓ Complete
+├── constants/       → ✓ Complete
+└── i18n/            → ✓ Complete (en.json, ar.json)
 
 app/
-â”œâ”€â”€ (auth)/          â†’ âœ“ Login screen ready
-â”œâ”€â”€ (staff)/         â†’ Dashboard, Cars, Rentals, Customers, Expenses, Reports
-â””â”€â”€ (partner)/       â†’ Dashboard, My Cars, Payments
+├── (auth)/          → ✓ Login screen ready
+├── (staff)/         → Dashboard, Cars, Rentals, Customers, Expenses, Reports
+└── (partner)/       → Dashboard, My Cars, Payments
 ```
 
-## ðŸŽ¯ MVP Definition
+## 🎯 MVP Definition
 
 **In Scope:**
 - Rental creation, tracking, return, cancellation
@@ -130,7 +130,7 @@ app/
 - Analytics dashboards
 - Admin user management UI
 
-## ðŸš€ Dev Server
+## 🚀 Dev Server
 
 Dev server runs on `http://localhost:8081`
 
@@ -142,7 +142,7 @@ npm start
 # Or press: i (iOS) / a (Android) / w (Web)
 ```
 
-## ðŸ“ Git Workflow
+## 📝 Git Workflow
 
 ```bash
 # Initialize if needed
@@ -155,7 +155,7 @@ git checkout -b feature/rental-forms
 git checkout -b feature/supabase-integration
 ```
 
-## ðŸ”‘ Environment Variables
+## 🔑 Environment Variables
 
 **Required in `.env.local`:**
 ```
@@ -163,8 +163,8 @@ EXPO_PUBLIC_SUPABASE_URL=
 EXPO_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-Get these from Supabase project settings â†’ API
+Get these from Supabase project settings → API
 
-## ðŸ“ž Support
+## 📞 Support
 
 See CLAUDE.md for architecture notes and design decisions.

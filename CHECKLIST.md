@@ -1,17 +1,17 @@
-﻿# Car Rental App Supabase Setup Checklist
+# Car Rental App Supabase Setup Checklist
 
-## ðŸ“‹ Quick Setup (Follow in Order)
+## 📋 Quick Setup (Follow in Order)
 
-### âœ… Step 1: Create Supabase Project
+### ✅ Step 1: Create Supabase Project
 - [ ] Go to https://supabase.com
 - [ ] Click "New Project"
 - [ ] Name it: `car-rental-app`
 - [ ] Choose Region (closest to you)
 - [ ] Set Database Password
-- [ ] Wait 2-3 minutes â³
+- [ ] Wait 2-3 minutes ⏳
 
-### âœ… Step 2: Get API Credentials
-- [ ] Go to Settings â†’ API
+### ✅ Step 2: Get API Credentials
+- [ ] Go to Settings → API
 - [ ] Copy **Project URL** (https://...)
 - [ ] Copy **anon public key**
 - [ ] Paste into `.env.local`:
@@ -21,34 +21,29 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=paste-here
 ```
 - [ ] Save `.env.local`
 
-### âœ… Step 3: Run SQL Migrations
+### ✅ Step 3: Run SQL Migrations
 
-**Go to SQL Editor in Supabase Dashboard**
+**Go to SQL Editor in Supabase Dashboard.** For each migration below, in order: click "New
+Query", copy the file's entire content, paste into the SQL editor, click "Run" (or Ctrl+Enter),
+and wait for ✅ success before moving to the next one.
 
-#### Migration 1: Tables & Schema
-- [ ] Click "New Query"
-- [ ] Copy from: `supabase/migrations/001_initial_schema.sql`
-- [ ] Paste into SQL editor
-- [ ] Click "Run" or Ctrl+Enter
-- [ ] Wait for âœ… success
+- [ ] `001_initial_schema.sql` — 8 core tables
+- [ ] `002_enable_rls.sql` — Row-level security
+- [ ] `003_functions.sql` — Database functions & triggers
+- [ ] `004_fix_user_creation.sql` — Fixes the auto-create-profile trigger
+- [ ] `005_disable_trigger.sql` — Disables that trigger (superseded by #12)
+- [ ] `006_fix_permissions.sql` — Grants + RLS policies for the API roles
+- [ ] `007_partners_is_active.sql` — Soft-delete flag on partners
+- [ ] `008_customers_is_active.sql` — Soft-delete flag on customers
+- [ ] `009_rental_settlement.sql` — Settlement fields (recalculated charge, penalty/discount)
+- [ ] `010_rental_times.sql` — Start/end time on rentals (same-day re-rental)
+- [ ] `011_partner_login_email.sql` — Partner login-email reference field
+- [ ] `012_profile_trigger.sql` — Re-adds the profile trigger correctly
+- [ ] `013_partner_portal_rls.sql` — Partner portal read policies
 
-#### Migration 2: RLS & Security
-- [ ] Click "New Query"
-- [ ] Copy from: `supabase/migrations/002_enable_rls.sql`
-- [ ] Paste into SQL editor
-- [ ] Click "Run"
-- [ ] Wait for âœ… success
+### ✅ Step 4: Enable Authentication
 
-#### Migration 3: Functions & Triggers
-- [ ] Click "New Query"
-- [ ] Copy from: `supabase/migrations/003_functions.sql`
-- [ ] Paste into SQL editor
-- [ ] Click "Run"
-- [ ] Wait for âœ… success
-
-### âœ… Step 4: Enable Authentication
-
-In Supabase Dashboard â†’ Authentication:
+In Supabase Dashboard → Authentication:
 
 - [ ] Click **Providers**
 - [ ] Find **Email**
@@ -60,9 +55,9 @@ In Supabase Dashboard â†’ Authentication:
   exp://localhost:8081/
   ```
 
-### âœ… Step 5: Create Test Users
+### ✅ Step 5: Create Test Users
 
-In Supabase Dashboard â†’ Authentication â†’ Users:
+In Supabase Dashboard → Authentication → Users:
 
 #### User 1: Staff
 - [ ] Click "Add User"
@@ -95,9 +90,9 @@ WHERE id = (SELECT id FROM auth.users WHERE email = 'partner@car-rental-app.test
 ```
 
 - [ ] Click "Run"
-- [ ] Wait for âœ… success
+- [ ] Wait for ✅ success
 
-### âœ… Step 6: Add Sample Data (Optional)
+### ✅ Step 6: Add Sample Data (Optional)
 
 In **SQL Editor**, run:
 
@@ -115,7 +110,7 @@ VALUES
 
 - [ ] Click "Run"
 
-### âœ… Step 7: Restart Dev Server
+### ✅ Step 7: Restart Dev Server
 
 ```bash
 # Stop dev server (Ctrl+C)
@@ -125,7 +120,7 @@ npm start
 - [ ] Dev server restarted
 - [ ] No errors in console
 
-### âœ… Step 8: Test Login
+### ✅ Step 8: Test Login
 
 1. **Open app in Expo Go or emulator**
    - Run: `npm start`
@@ -135,21 +130,21 @@ npm start
    - Email: `staff@car-rental-app.test`
    - Password: `Password123`
    - Click "Sign In"
-   - âœ… Should see **Staff Dashboard**
+   - ✅ Should see **Staff Dashboard**
 
 3. **Test Partner Login**
    - Click logout
    - Email: `partner@car-rental-app.test`
    - Password: `Password123`
    - Click "Sign In"
-   - âœ… Should see **Partner Dashboard**
+   - ✅ Should see **Partner Dashboard**
 
 ---
 
-## ðŸ” Verification Checklist
+## 🔍 Verification Checklist
 
 ### Database
-- [ ] Go to Supabase â†’ Table Editor
+- [ ] Go to Supabase → Table Editor
 - [ ] See these tables:
   - [ ] profiles
   - [ ] partners
@@ -161,12 +156,12 @@ npm start
   - [ ] partner_payments
 
 ### Row Level Security
-- [ ] Click each table â†’ "RLS Policies" tab
+- [ ] Click each table → "RLS Policies" tab
 - [ ] See multiple policies per table
 - [ ] All policies are "ENABLED"
 
 ### Functions
-- [ ] Go to Supabase â†’ Functions
+- [ ] Go to Supabase → Functions
 - [ ] See these functions:
   - [ ] is_car_available
   - [ ] get_car_revenue
@@ -174,36 +169,36 @@ npm start
   - [ ] get_general_expenses
 
 ### Authentication
-- [ ] Go to Supabase â†’ Authentication â†’ Users
+- [ ] Go to Supabase → Authentication → Users
 - [ ] See 2 test users:
   - [ ] staff@car-rental-app.test (role: staff)
   - [ ] partner@car-rental-app.test (role: partner)
 
 ---
 
-## ðŸ› Troubleshooting
+## 🐛 Troubleshooting
 
 ### "Invalid API Key" Error
 **Problem**: App shows "Invalid API Key" on login
 **Solution**:
 1. Check `.env.local` file exists
-2. Verify credentials match Supabase Settings â†’ API
+2. Verify credentials match Supabase Settings → API
 3. Restart dev server: `npm start`
 
 ### "User not found" on Login
 **Problem**: Can't log in with test users
 **Solution**:
-1. Go to Supabase â†’ Authentication â†’ Users
+1. Go to Supabase → Authentication → Users
 2. Verify email/password match what you entered
 3. If missing, create them again in Step 5
 
 ### "Permission denied" Errors
 **Problem**: Can't load data after login
 **Solution**:
-1. Go to Supabase â†’ Table Editor
-2. Click a table â†’ "RLS Policies"
+1. Go to Supabase → Table Editor
+2. Click a table → "RLS Policies"
 3. Check all policies are present
-4. If missing, re-run Migration 2
+4. If missing, re-run `002_enable_rls.sql`, `006_fix_permissions.sql`, and `013_partner_portal_rls.sql`
 
 ### Dev Server Won't Start
 **Problem**: `npm start` fails
@@ -217,20 +212,20 @@ npm start
 ### Need to Reset Everything
 ```bash
 # Go to Supabase Dashboard
-# Settings â†’ Danger Zone â†’ Reset Database
-# Then re-run all 3 migrations
+# Settings → Danger Zone → Reset Database
+# Then re-run all 13 migrations, in order
 ```
 
 ---
 
-## ðŸ“ Credentials to Save
+## 📝 Credentials to Save
 
 Save these somewhere secure:
 
 | Item | Value |
 |------|-------|
 | Supabase Project URL | `https://xxxx.supabase.co` |
-| Anon Key | (from Settings â†’ API) |
+| Anon Key | (from Settings → API) |
 | Database Password | (what you set in Step 1) |
 | Test Staff Email | `staff@car-rental-app.test` |
 | Test Partner Email | `partner@car-rental-app.test` |
@@ -238,13 +233,13 @@ Save these somewhere secure:
 
 ---
 
-## âœ… All Done!
+## ✅ All Done!
 
 When all checks pass:
-- âœ… Database is set up
-- âœ… Authentication works
-- âœ… App connects to Supabase
-- âœ… Users can log in
-- âœ… Role-based access works
+- ✅ Database is set up
+- ✅ Authentication works
+- ✅ App connects to Supabase
+- ✅ Users can log in
+- ✅ Role-based access works
 
 Next: Start building features! See `SETUP.md` for next development steps.

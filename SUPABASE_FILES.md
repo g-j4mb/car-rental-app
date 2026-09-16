@@ -1,10 +1,10 @@
-﻿# Supabase Setup Files Reference
+# Supabase Setup Files Reference
 
 All files you need are in the project root.
 
-## ðŸ“‚ SQL Migration Files
+## 📂 SQL Migration Files
 
-These go into Supabase SQL Editor (copy entire file):
+These go into Supabase SQL Editor (copy entire file), run in order:
 
 ### 1. `supabase/migrations/001_initial_schema.sql`
 **What it does:**
@@ -22,7 +22,7 @@ These go into Supabase SQL Editor (copy entire file):
 - general_expenses (company costs)
 - partner_payments (monthly settlements)
 
-**Run this FIRST** âœ…
+**Run this 1st** ✅
 
 ---
 
@@ -34,12 +34,12 @@ These go into Supabase SQL Editor (copy entire file):
 - Staff/admin see all data
 
 **Security enforced:**
-- Partners â†”ï¸ Only their cars/rentals/payments
-- Staff/Admin â†”ï¸ All data
-- Customers â†”ï¸ Staff only
-- Expenses â†”ï¸ Staff only
+- Partners ↔️ Only their cars/rentals/payments
+- Staff/Admin ↔️ All data
+- Customers ↔️ Staff only
+- Expenses ↔️ Staff only
 
-**Run this SECOND** âœ…
+**Run this 2nd** ✅
 
 ---
 
@@ -53,13 +53,71 @@ These go into Supabase SQL Editor (copy entire file):
 - Creates triggers for `updated_at` timestamps
 - Creates trigger for auto-create profile on signup
 
-**Run this THIRD** âœ…
+**Run this 3rd** ✅
 
 ---
 
-## ðŸ“– Setup Guides
+### 4. `supabase/migrations/004_fix_user_creation.sql`
+Fixes the auto-create-profile trigger from #3. **Run this 4th** ✅
 
-### `SUPABASE_QUICK_START.md` âš¡
+---
+
+### 5. `supabase/migrations/005_disable_trigger.sql`
+Disables that trigger entirely — superseded later by #12. **Run this 5th** ✅
+
+---
+
+### 6. `supabase/migrations/006_fix_permissions.sql`
+Grants base table privileges and RLS policies to the API roles (idempotent — safe to
+re-run). **Run this 6th** ✅
+
+---
+
+### 7. `supabase/migrations/007_partners_is_active.sql`
+Adds an `is_active` soft-delete flag to partners, preserving payment history & car
+links. **Run this 7th** ✅
+
+---
+
+### 8. `supabase/migrations/008_customers_is_active.sql`
+Adds an `is_active` soft-delete flag to customers, preserving rental history.
+**Run this 8th** ✅
+
+---
+
+### 9. `supabase/migrations/009_rental_settlement.sql`
+Adds settlement fields populated when a rental is returned: recalculated charge
+(pro-rated by actual return date), penalty, and discount. **Run this 9th** ✅
+
+---
+
+### 10. `supabase/migrations/010_rental_times.sql`
+Adds `start_time`/`end_time` to rentals so a car can be returned and re-rented the
+same day without a false overlap. **Run this 10th** ✅
+
+---
+
+### 11. `supabase/migrations/011_partner_login_email.sql`
+Adds a reference field recording which Supabase Auth login belongs to a partner.
+**Run this 11th** ✅
+
+---
+
+### 12. `supabase/migrations/012_profile_trigger.sql`
+Re-adds the auto-create-profile trigger correctly — `SECURITY DEFINER` with a fixed
+search path, reading role/partner_id from user metadata. **Run this 12th** ✅
+
+---
+
+### 13. `supabase/migrations/013_partner_portal_rls.sql`
+Re-asserts the partner-relevant read policies from #6 so the partner portal has
+exactly the read access it needs. **Run this 13th (last)** ✅
+
+---
+
+## 📖 Setup Guides
+
+### `SUPABASE_QUICK_START.md` ⚡
 **5-minute ultra-fast setup**
 - Copy/paste steps only
 - For experienced users
@@ -69,7 +127,7 @@ These go into Supabase SQL Editor (copy entire file):
 
 ---
 
-### `SUPABASE_SETUP.md` ðŸ“š
+### `SUPABASE_SETUP.md` 📚
 **Comprehensive guide (30 minutes)**
 - Detailed step-by-step instructions
 - Screenshots & what to expect
@@ -81,7 +139,7 @@ These go into Supabase SQL Editor (copy entire file):
 
 ---
 
-### `CHECKLIST.md` âœ…
+### `CHECKLIST.md` ✅
 **Interactive checkbox format**
 - Copy/paste SQL snippets
 - Verification checklist
@@ -92,7 +150,7 @@ These go into Supabase SQL Editor (copy entire file):
 
 ---
 
-## ðŸ“± Code Files Updated
+## 📱 Code Files Updated
 
 ### `src/services/auth.service.ts` (NEW)
 Real Supabase authentication:
@@ -123,7 +181,7 @@ Now uses real Supabase auth:
 
 ---
 
-## ðŸ”‘ Environment Variables
+## 🔑 Environment Variables
 
 ### `.env.local` (You Create)
 ```env
@@ -136,59 +194,65 @@ Reference file showing what variables needed
 
 **How to get values:**
 1. Go to your Supabase project
-2. Settings â†’ API
+2. Settings → API
 3. Copy "Project URL"
 4. Copy "anon public" key
 5. Paste into `.env.local`
 
 ---
 
-## ðŸš¦ Setup Order
+## 🚦 Setup Order
 
 **Follow these steps in order:**
 
 ```
 1. Read SUPABASE_QUICK_START.md (or SUPABASE_SETUP.md for detail)
-   â†“
+   ↓
 2. Create Supabase project at supabase.com
-   â†“
+   ↓
 3. Copy credentials to .env.local
-   â†“
-4. Run Migration 001 (create tables)
-   â†“
-5. Run Migration 002 (enable RLS security)
-   â†“
-6. Run Migration 003 (create functions)
-   â†“
-7. Create test users in Auth panel
-   â†“
-8. Run user setup SQL (set roles, create partner)
-   â†“
-9. Restart app: npm start
-   â†“
-10. Test login with staff@car-rental-app.test
-   â†“
-11. Done! ðŸŽ‰
+   ↓
+4. Run all 13 migrations, in order (001 → 013)
+   ↓
+5. Create test users in Auth panel
+   ↓
+6. Run user setup SQL (set roles, create partner)
+   ↓
+7. Restart app: npm start
+   ↓
+8. Test login with staff@car-rental-app.test
+   ↓
+9. Done! 🎉
 ```
 
 ---
 
-## ðŸ” Quick Reference
+## 🔍 Quick Reference
 
 | File | Purpose | Action |
 |------|---------|--------|
-| 001_initial_schema.sql | Create tables | Copy â†’ Paste â†’ Run in SQL Editor |
-| 002_enable_rls.sql | Security policies | Copy â†’ Paste â†’ Run in SQL Editor |
-| 003_functions.sql | Database functions | Copy â†’ Paste â†’ Run in SQL Editor |
+| 001_initial_schema.sql | Create tables | Copy → Paste → Run in SQL Editor |
+| 002_enable_rls.sql | Security policies | Copy → Paste → Run in SQL Editor |
+| 003_functions.sql | Database functions | Copy → Paste → Run in SQL Editor |
+| 004_fix_user_creation.sql | Fix profile trigger | Copy → Paste → Run in SQL Editor |
+| 005_disable_trigger.sql | Disable that trigger | Copy → Paste → Run in SQL Editor |
+| 006_fix_permissions.sql | Grants + RLS for API roles | Copy → Paste → Run in SQL Editor |
+| 007_partners_is_active.sql | Soft-delete flag on partners | Copy → Paste → Run in SQL Editor |
+| 008_customers_is_active.sql | Soft-delete flag on customers | Copy → Paste → Run in SQL Editor |
+| 009_rental_settlement.sql | Settlement fields | Copy → Paste → Run in SQL Editor |
+| 010_rental_times.sql | Start/end time on rentals | Copy → Paste → Run in SQL Editor |
+| 011_partner_login_email.sql | Partner login-email field | Copy → Paste → Run in SQL Editor |
+| 012_profile_trigger.sql | Re-add profile trigger correctly | Copy → Paste → Run in SQL Editor |
+| 013_partner_portal_rls.sql | Partner portal read policies | Copy → Paste → Run in SQL Editor |
 | auth.service.ts | Supabase auth methods | Already in code |
 | login.tsx | Login screen | Updated with real auth |
 
 ---
 
-## ðŸ’¡ Key Concepts
+## 💡 Key Concepts
 
 ### Row Level Security (RLS)
-Enforced at **database level** â€” partners can only select their own cars:
+Enforced at **database level** — partners can only select their own cars:
 ```sql
 -- Example: Partner tries to load all cars
 SELECT * FROM cars;
@@ -208,7 +272,7 @@ All money stored as `DECIMAL(10,2)`:
 
 ---
 
-## ðŸŽ¯ After Setup
+## 🎯 After Setup
 
 Once Supabase is connected:
 
@@ -223,27 +287,27 @@ See `SETUP.md` for roadmap.
 
 ---
 
-## â“ FAQ
+## ❓ FAQ
 
 **Q: Can I use same Supabase project for multiple apps?**
 A: Yes, but create separate database schemas for each app.
 
 **Q: Can I change database password later?**
-A: Yes, in Supabase Settings â†’ Database.
+A: Yes, in Supabase Settings → Database.
 
 **Q: How do I reset everything?**
-A: Supabase Settings â†’ Danger Zone â†’ Reset Database. Then re-run migrations.
+A: Supabase Settings → Danger Zone → Reset Database. Then re-run migrations.
 
 **Q: Do users need email verification for signup?**
-A: No, we disabled it for development. Enable later in Authentication â†’ Providers.
+A: No, we disabled it for development. Enable later in Authentication → Providers.
 
 ---
 
-## ðŸ“ž Support
+## 📞 Support
 
 If stuck:
 1. Check `CHECKLIST.md` troubleshooting section
 2. Check `SUPABASE_SETUP.md` full guide
-3. Verify all 3 migrations ran without errors
+3. Verify all 13 migrations ran without errors
 4. Check `.env.local` has correct credentials
 5. Restart app: `npm start`

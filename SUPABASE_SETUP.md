@@ -1,6 +1,6 @@
-﻿# Supabase Setup Guide for Car Rental App
+# Supabase Setup Guide for Car Rental App
 
-## ðŸŽ¯ Overview
+## 🎯 Overview
 
 This guide walks you through setting up Supabase for the Car Rental App.
 
@@ -21,7 +21,7 @@ This guide walks you through setting up Supabase for the Car Rental App.
 ## Step 2: Get API Credentials
 
 1. Once project is ready, click it to open
-2. Go to **Settings â†’ API** (left sidebar)
+2. Go to **Settings → API** (left sidebar)
 3. **Copy these two values**:
    - **Project URL** (under "Project URL")
    - **anon public key** (under "Project API keys")
@@ -39,28 +39,25 @@ Save and restart dev server: `npm start`
 
 ## Step 3: Run SQL Migrations
 
-Open **SQL Editor** in Supabase (left sidebar: SQL):
+Open **SQL Editor** in Supabase (left sidebar: SQL). For each migration below, in order:
+click **"New Query"**, paste the entire content of the file, click **"Run"** (or Ctrl+Enter), and
+wait for the green success message ✅ before moving to the next one.
 
-### Migration 1: Create Tables & Schema
-
-1. Click **"New Query"**
-2. Paste the entire content from: `supabase/migrations/001_initial_schema.sql`
-3. Click **"Run"** (or Ctrl+Enter)
-4. Wait for green success message âœ…
-
-### Migration 2: Enable Row-Level Security
-
-1. Click **"New Query"**
-2. Paste the entire content from: `supabase/migrations/002_enable_rls.sql`
-3. Click **"Run"**
-4. Wait for green success âœ…
-
-### Migration 3: Create Functions & Triggers
-
-1. Click **"New Query"**
-2. Paste the entire content from: `supabase/migrations/003_functions.sql`
-3. Click **"Run"**
-4. Wait for green success âœ…
+| # | File | What it does |
+|---|---|---|
+| 1 | `supabase/migrations/001_initial_schema.sql` | Creates the 8 core tables |
+| 2 | `supabase/migrations/002_enable_rls.sql` | Enables Row-Level Security |
+| 3 | `supabase/migrations/003_functions.sql` | Creates database functions & triggers |
+| 4 | `supabase/migrations/004_fix_user_creation.sql` | Fixes the auto-create-profile trigger |
+| 5 | `supabase/migrations/005_disable_trigger.sql` | Disables that trigger (superseded by #12) |
+| 6 | `supabase/migrations/006_fix_permissions.sql` | Grants + RLS policies for the API roles |
+| 7 | `supabase/migrations/007_partners_is_active.sql` | Soft-delete flag on partners |
+| 8 | `supabase/migrations/008_customers_is_active.sql` | Soft-delete flag on customers |
+| 9 | `supabase/migrations/009_rental_settlement.sql` | Settlement fields (recalculated charge, penalty/discount) |
+| 10 | `supabase/migrations/010_rental_times.sql` | Start/end time on rentals (same-day re-rental) |
+| 11 | `supabase/migrations/011_partner_login_email.sql` | Partner login-email reference field |
+| 12 | `supabase/migrations/012_profile_trigger.sql` | Re-adds the profile trigger correctly |
+| 13 | `supabase/migrations/013_partner_portal_rls.sql` | Partner portal read policies |
 
 **All migrations are now in your Supabase database!**
 
@@ -75,11 +72,11 @@ Go to **Authentication** (left sidebar):
 1. Click **Providers** 
 2. Find **Email** in the list
 3. Toggle **Enable Sign-in with Email** (should be green/on)
-4. Make sure **Confirm email** is OFF (for development) â€” you can toggle later
+4. Make sure **Confirm email** is OFF (for development) — you can toggle later
 
 ### Configure Redirect URLs
 
-1. Go to **Authentication â†’ URL Configuration**
+1. Go to **Authentication → URL Configuration**
 2. Add under **Redirect URLs**:
    ```
    exp://localhost:8081/
@@ -92,7 +89,7 @@ Go to **Authentication** (left sidebar):
 
 ## Step 5: Create Test Users
 
-Go to **Authentication â†’ Users**:
+Go to **Authentication → Users**:
 
 1. Click **"Add User"**
 2. Create staff user:
@@ -172,14 +169,14 @@ SELECT
 ### 1. Check Tables Exist
 
 Go to **Table Editor** (left sidebar) and verify you see:
-- âœ… profiles
-- âœ… partners
-- âœ… cars
-- âœ… customers
-- âœ… rentals
-- âœ… car_expenses
-- âœ… general_expenses
-- âœ… partner_payments
+- ✅ profiles
+- ✅ partners
+- ✅ cars
+- ✅ customers
+- ✅ rentals
+- ✅ car_expenses
+- ✅ general_expenses
+- ✅ partner_payments
 
 ### 2. Test Login
 
@@ -187,7 +184,7 @@ In your app (`npm start`), try logging in:
 - Email: `staff@car-rental-app.test`
 - Password: `Password123`
 
-Should redirect to **Staff Dashboard** âœ…
+Should redirect to **Staff Dashboard** ✅
 
 ### 3. Test Partner Login
 
@@ -195,13 +192,13 @@ Try logging in with:
 - Email: `partner@car-rental-app.test`
 - Password: `Password123`
 
-Should redirect to **Partner Dashboard** âœ…
+Should redirect to **Partner Dashboard** ✅
 
 ---
 
 ## Step 8: Enable Real-time (Optional)
 
-Go to **Database â†’ Replication** (left sidebar):
+Go to **Database → Replication** (left sidebar):
 
 Click on each table and enable **realtime** if you want live updates:
 - rentals
@@ -219,8 +216,8 @@ Click on each table and enable **realtime** if you want live updates:
 
 ### "User not found" on login
 - Check you created test users in Step 5
-- Verify their email/password in Supabase Auth â†’ Users
-- Profiles might not be created â€” run this SQL:
+- Verify their email/password in Supabase Auth → Users
+- Profiles might not be created — run this SQL:
   ```sql
   INSERT INTO profiles (id, full_name, role)
   SELECT id, raw_user_meta_data->>'full_name', 'staff'
@@ -229,12 +226,12 @@ Click on each table and enable **realtime** if you want live updates:
   ```
 
 ### "Permission denied" errors
-- Check RLS policies were created (Step 3, Migration 2)
+- Check RLS policies were created (Step 3, migrations 2, 6, and 13)
 - Go to **Table Editor**, click a table, check "RLS Policies" tab
 - Should see multiple policies for each table
 
 ### Functions not working
-- Go to **SQL Editor â†’ Functions** (left sidebar)
+- Go to **SQL Editor → Functions** (left sidebar)
 - Verify these functions exist:
   - `is_car_available`
   - `get_car_revenue`
@@ -243,7 +240,7 @@ Click on each table and enable **realtime** if you want live updates:
 
 ---
 
-## ðŸŽ‰ Setup Complete!
+## 🎉 Setup Complete!
 
 Your Supabase backend is ready. Next steps in app development:
 
@@ -262,7 +259,7 @@ See `SETUP.md` for app development next steps.
 | Item | Value |
 |------|-------|
 | **Supabase URL** | `https://xxxx.supabase.co` (in .env.local) |
-| **Anon Key** | Available in Settings â†’ API |
+| **Anon Key** | Available in Settings → API |
 | **Test Staff Email** | `staff@car-rental-app.test` |
 | **Test Partner Email** | `partner@car-rental-app.test` |
 | **Test Password** | `Password123` |
@@ -283,4 +280,4 @@ See `SETUP.md` for app development next steps.
 - `partner_payments` (monthly settlements)
 
 **Row-Level Security:** Partners only see their own data
-**Currency:** All amounts in DECIMAL(10,2) â€” safe for financial math
+**Currency:** All amounts in DECIMAL(10,2) — safe for financial math
